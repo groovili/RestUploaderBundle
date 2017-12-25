@@ -1,0 +1,30 @@
+api.files.upload:
+    path:  /api/files
+    defaults: { _controller: RestUploaderBundle:File:upload }
+    methods: [ POST ]
+
+api.files.cget:
+    path:  /api/files
+    defaults: { _controller: RestUploaderBundle:File:cget }
+    methods: [ GET ]
+
+api.files.get:
+    path:  /api/files/{file}
+    defaults: { _controller: RestUploaderBundle:File:get }
+    methods: [ GET ]
+    requirements:
+            file: '\d+'
+
+api.files.download:
+    path:  /api/files/{file}/download
+    defaults: { _controller: RestUploaderBundle:File:download }
+    methods: [ GET ]
+    requirements:
+            file: '\d+'
+
+api.files.delete:
+    path:  /api/files/{file}
+    defaults: { _controller: RestUploaderBundle:File:delete }
+    methods: [ DELETE ]
+    requirements:
+            file: '\d+'
