@@ -26,7 +26,7 @@
   "suggest": {
   },
   "autoload": {
-    "psr-4": { "Groovili\\RestUploaderBundle\\": ""}
+    "psr-4": { "": "src/"}
   },
   "autoload-dev": {
     "psr-4": {
