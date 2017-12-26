@@ -1,10 +1,10 @@
 REQUIRED:
 
-TODO: Add services (validator and manager)
+TODO: Add services (validator and manager) (Done!)
 TODO: Rewrite controllers to provide generic functions (use modified services)
 TODO: Add events (preUpload, postUpload, preDelete)
 TODO: Add composer required libraries (to bundle root)
-TODO: Add dependency injection (yaml conf required for schemes and extensions, services)
+TODO: Add dependency injection (yaml conf required for schemes and extensions, services) (Done!)
 TODO: Add form type (to handle all REST queries, use validator component and yml settings)
 
 PLANS:
