@@ -7,7 +7,6 @@
  *  * file that was distributed with this source code.
  *
  */
-
 declare(strict_types=1);
 
 namespace Groovili\RestUploaderBundle\Repository;
@@ -17,6 +16,11 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
+/**
+ * Class AbstractRepository
+ *
+ * @package Groovili\RestUploaderBundle\Repository
+ */
 class AbstractRepository extends EntityRepository
 {
     /**

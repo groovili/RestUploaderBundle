@@ -7,6 +7,7 @@
      *  * file that was distributed with this source code.
      *
      */
+    declare(strict_types = 1);
     
     namespace Groovili\RestUploaderBundle\DependencyInjection;
     
@@ -29,18 +30,18 @@
             $rootNode = $treeBuilder->root('rest_uploader');
             
             $rootNode->children()
-                ->scalarNode('public_dir')
-                ->defaultValue('web/assets/files')
-                ->cannotBeEmpty()
-                ->end()
-                ->scalarNode('private_dir')
-                ->defaultValue('private')
-                ->end()
-                ->arrayNode('allowed_extensions')
-                ->end()
-                ->integerNode('file_max_size')
-                ->defaultValue(25)
-                ->end();
+                     ->scalarNode('public_dir')
+                     ->defaultValue('web/assets/files')
+                     ->cannotBeEmpty()
+                     ->end()
+                     ->scalarNode('private_dir')
+                     ->defaultValue('private')
+                     ->end()
+                     ->arrayNode('allowed_extensions')
+                     ->end()
+                     ->integerNode('file_max_size')
+                     ->defaultValue(25)
+                     ->end();
             
             return $treeBuilder;
         }
