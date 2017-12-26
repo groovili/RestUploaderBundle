@@ -21,8 +21,6 @@
      */
     class FileValidator
     {
-        protected const DEFAULT_FILE_MAX_SIZE = 25;
-        
         /**
          * @var array
          */
