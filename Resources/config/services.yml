@@ -1,4 +1,8 @@
 services:
-#    rest_uploader.example:
-#        class: Groovili\RestUploaderBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    rest_uploader.manager:
+        class: Groovili\RestUploaderBundle\Service\FileManager
+        arguments: ["%kernel.root_dir%", "@filesystem"]
+
+    rest_uploader.validator:
+        class: Groovili\RestUploaderBundle\Service\FileValidator
+        arguments: ["%kernel.root_dir%"]

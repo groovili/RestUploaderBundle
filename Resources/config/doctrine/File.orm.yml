@@ -1,0 +1,29 @@
+Groovili\RestUploaderBundle\Entity\File:
+    type: entity
+    table: app_file
+    repositoryClass: Groovili\RestUploaderBundle\Repository\FileRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        scheme:
+            type: integer
+        name:
+            type: string
+            length: 255
+        ext:
+            type: string
+            length: 255
+        path:
+            type: string
+            length: 255
+        createdAt:
+            type: datetime
+        size:
+            type: integer
+
+
+    lifecycleCallbacks: {  }
