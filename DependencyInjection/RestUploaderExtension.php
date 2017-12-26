@@ -24,13 +24,13 @@
      */
     class RestUploaderExtension extends Extension
     {
-        protected const DEFAULT_DIR_PERMISSIONS    = 666;
+        protected const DEFAULT_DIR_PERMISSIONS    = 755;
         
-        protected const DEFAULT_PUBLIC_FILES_PATH  = 'files';
+        protected const DEFAULT_PUBLIC_FILES_PATH  = '../web/files';
         
         protected const DEFAULT_PRIVATE_FILES_PATH = '../private';
-    
-        protected const DEFAULT_FILE_MAX_SIZE = 25;
+        
+        protected const DEFAULT_FILE_MAX_SIZE      = 25;
         
         /**
          * {@inheritdoc}
@@ -44,7 +44,7 @@
               new FileLocator(__DIR__.'/../Resources/config'));
             $loader->load('services.yml');
             
-            $kernelRootDir = $_SERVER['DOCUMENT_ROOT'].'/';
+            $kernelRootDir = $container->getParameter('kernel.root_dir') . '/';
             
             // Validate public dir ir set it from default config
             if (isset($config['public_dir']) && is_string($config['public_dir'])) {
@@ -70,14 +70,14 @@
             // Validate file size or set default
             if (isset($config['file_max_size'])) {
                 self::validateMaxFileSize($config['file_max_size']);
-            }else{
+            } else {
                 // Set 25 MB limit for files by default
                 $config['file_max_size'] = self::DEFAULT_FILE_MAX_SIZE;
             }
             
             if (isset($config['allowed_extensions'])) {
                 self::validateExtensionsArray($config['allowed_extensions']);
-            }else{
+            } else {
                 // Allow all extensions by default
                 $config['allowed_extensions'] = [];
             }
@@ -118,8 +118,10 @@
          */
         private static function createDir(string $path): bool
         {
-            if (!mkdir($path, self::DEFAULT_DIR_PERMISSIONS, true)) {
-                throw new \LogicException('Unable to create following directory '.$path);
+            if (!is_dir($path)) {
+                if (!mkdir($path, self::DEFAULT_DIR_PERMISSIONS, true)) {
+                    throw new \LogicException('Unable to create following directory '.$path);
+                }
             }
             
             @chmod($path, self::DEFAULT_DIR_PERMISSIONS & ~umask());
