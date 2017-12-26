@@ -21,6 +21,8 @@ Add the RestUploaderBundle to your application's kernel:
     }
 ```
 
+**FOSRest**, **JMSSerializer** and **Nelmio Api-doc** bundle would be installed as well and should be configured in your **config.yml** file.
+
 ## Configuration
 
 The `public_dir` and `private_dir` are path strings from **app** folder.
