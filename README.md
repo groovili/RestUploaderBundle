@@ -32,7 +32,7 @@ If not exist, would be added automatically. This parameters should be only strin
 
 `file_max_size` is integer number in MB, which would be maximum limit.
 
-Configuration which provided below is default for this bundle.
+Configuration which provided below is default for this bundle:
 
 ```yaml
     rest_uploader:
