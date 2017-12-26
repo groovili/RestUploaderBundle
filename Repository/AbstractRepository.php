@@ -15,6 +15,7 @@ namespace Groovili\RestUploaderBundle\Repository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class AbstractRepository extends EntityRepository
 {
