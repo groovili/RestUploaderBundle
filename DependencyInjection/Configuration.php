@@ -1,29 +1,47 @@
 <?php
-
-namespace Groovili\RestUploaderBundle\DependencyInjection;
-
-use Symfony\Component\Config\Definition\Builder\TreeBuilder;
-use Symfony\Component\Config\Definition\ConfigurationInterface;
-
-/**
- * This is the class that validates and merges configuration from your app/config files.
- *
- * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/configuration.html}
- */
-class Configuration implements ConfigurationInterface
-{
     /**
-     * {@inheritdoc}
+     *
+     *  * This file is part of the RestUploaderBundle package.
+     *  * (c) groovili
+     *  * For the full copyright and license information, please view the LICENSE
+     *  * file that was distributed with this source code.
+     *
      */
-    public function getConfigTreeBuilder()
+    
+    namespace Groovili\RestUploaderBundle\DependencyInjection;
+    
+    use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+    use Symfony\Component\Config\Definition\ConfigurationInterface;
+    
+    /**
+     * Class Configuration
+     *
+     * @package Groovili\RestUploaderBundle\DependencyInjection
+     */
+    class Configuration implements ConfigurationInterface
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('rest_uploader');
-
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
-
-        return $treeBuilder;
+        /**
+         * {@inheritdoc}
+         */
+        public function getConfigTreeBuilder()
+        {
+            $treeBuilder = new TreeBuilder();
+            $rootNode = $treeBuilder->root('rest_uploader');
+            
+            $rootNode->children()
+                ->scalarNode('public_dir')
+                ->defaultValue('web/assets/files')
+                ->cannotBeEmpty()
+                ->end()
+                ->scalarNode('private_dir')
+                ->defaultValue('private')
+                ->end()
+                ->arrayNode('allowed_extensions')
+                ->end()
+                ->integerNode('file_max_size')
+                ->defaultValue(25)
+                ->end();
+            
+            return $treeBuilder;
+        }
     }
-}
