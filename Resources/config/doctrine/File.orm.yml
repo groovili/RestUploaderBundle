@@ -23,8 +23,7 @@ Groovili\RestUploaderBundle\Entity\File:
         createdAt:
             type: datetime
         size:
-            type: string
-            length: 255
+            type: integer
 
 
     lifecycleCallbacks: {  }
