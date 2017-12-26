@@ -23,7 +23,7 @@ Add the RestUploaderBundle to your application's kernel:
 
 ## Configuration
 
-The `public_dir` and `private_dir` are path strings from web folder.
+The `public_dir` and `private_dir` are path strings from **app** folder.
 If not exist, would be added automatically. This parameters should be only strings.
 
 `allowed_extensions` is array of strings with allowed file extensions.
@@ -34,7 +34,7 @@ Configuration which provided below is default for this bundle.
 
 ```yaml
     rest_uploader:
-        public_dir: files
+        public_dir: ../web/files
         private_dir: '../private'
         allowed_extensions: []
         file_max_size: 25
