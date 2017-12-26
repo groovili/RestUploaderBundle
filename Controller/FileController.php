@@ -27,10 +27,6 @@
     class FileController extends BaseController
     {
         /**
-         * @param \Symfony\Component\HttpFoundation\Request $request
-         *
-         * @return \FOS\RestBundle\View\View|null
-         *
          * @SWG\Post(
          * tags={"file"},
          * @SWG\Parameter(
@@ -60,17 +56,21 @@
          */
         public function uploadAction(Request $request): ?View
         {
-            $uploader = $this->get('rest_uploader.manager');
-            $validator = $this->get('rest_uploader.validator');
             $upload = $request->files->get('file');
+            $manager = $this->get('rest_uploader.manager');
+            $validator = $this->get('rest_uploader.validator');
             
             if (isset($upload)) {
                 try {
-                    if (!$validator->checkFileSize($upload)) {
+                    if (!$validator->isSizeValid($upload)) {
                         return $this->returnValidationError('File is too big or not valid.');
                     }
                     
-                    $file = $uploader->uploadFile($upload);
+                    if (!$validator->isExtensionAllowed($upload)) {
+                        return $this->returnValidationError('File extension is not allowed.');
+                    }
+                    
+                    $file = $manager->upload($upload);
                     
                     $em = $this->getDoctrine()->getManager();
                     $em->persist($file);
@@ -86,8 +86,6 @@
         }
         
         /**
-         * @return View
-         *
          * @SWG\Get(
          * tags={"file"},
          * @SWG\Parameter(
@@ -111,7 +109,7 @@
          * ),
          * )
          */
-        public function cgetAction(Request $request)
+        public function cgetAction(Request $request): ?View
         {
             $repo = $this->getDoctrine()
                          ->getRepository('RestUploaderBundle:File');
@@ -124,9 +122,6 @@
         }
         
         /**
-         * @param File $file
-         *
-         * @return File
          * @SWG\Get(
          * tags={"file"},
          * @SWG\Parameter(
@@ -154,15 +149,15 @@
          * ),
          * )
          */
-        public function getAction(File $file)
+        public function getAction(File $file): ?View
         {
-            return $file;
+            return $this->returnSuccess($file);
         }
         
         /**
          * @param File $file
          *
-         * @return \Symfony\Component\HttpFoundation\Response
+         * @return null|\Symfony\Component\HttpFoundation\Response
          *
          * @SWG\Get(
          * tags={"file", "download"},
@@ -189,22 +184,12 @@
          */
         public function downloadAction(File $file): Response
         {
-            $uploader = $this->get('rest_uploader.manager');
+            $manager = $this->get('rest_uploader.manager');
             
-            $download = file_get_contents($uploader->getFileRealPath($file));
-            
-            $headers = [
-              'Content-Type'        => $file->getExt(),
-              'Content-Disposition' => 'inline; filename="'.$file->getName().'"',
-            ];
-            
-            return new Response($download, 200, $headers);
+            return $manager->download($file);
         }
         
         /**
-         * @param File $file
-         *
-         * @return View
          * @SWG\Delete(
          * tags={"file"},
          * @SWG\Parameter(
@@ -229,8 +214,14 @@
          * ),
          * )
          */
-        public function deleteAction(File $file)
+        public function deleteAction(File $file): ?View
         {
+            $manager = $this->get('rest_uploader.manager');
+            
+            if(!$manager->remove($file)){
+                return $this->returnUnknownError('Failed to remove file.');
+            }
+            
             $doctrine = $this->getDoctrine();
             
             $em = $doctrine->getManager();

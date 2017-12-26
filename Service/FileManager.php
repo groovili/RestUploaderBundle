@@ -12,8 +12,9 @@
     namespace Groovili\RestUploaderBundle\Service;
     
     use Groovili\RestUploaderBundle\Entity\File;
-    use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+    use Symfony\Component\Filesystem\Filesystem;
     use Symfony\Component\HttpFoundation\File\UploadedFile;
+    use Symfony\Component\HttpFoundation\Response;
     
     /**
      * Class FileManager
@@ -22,24 +23,15 @@
      */
     class FileManager
     {
-        protected const DEFAULT_PUBLIC_FILES_PATH  = 'web/assets/files';
-        
-        protected const DEFAULT_PRIVATE_FILES_PATH = '../private';
-        
-        /**
-         * @var string
-         */
-        private $publicDir;
-        
-        /**
-         * @var string
-         */
-        private $privateDir;
-        
         /**
          * @var string
          */
         private $kernelRoot;
+        
+        /**
+         * @var \Symfony\Component\Filesystem\Filesystem
+         */
+        private $fileSystem;
         
         /**
          * @var array
@@ -51,11 +43,10 @@
          *
          * @param string $kernelRoot
          */
-        public function __construct(string $kernelRoot)
+        public function __construct(string $kernelRoot, Filesystem $filesystem)
         {
-            $this->publicDir = $_SERVER['DOCUMENT_ROOT'].'/'.self::DEFAULT_PUBLIC_FILES_PATH;
-            $this->privateDir = $_SERVER['DOCUMENT_ROOT'].'/'.self::DEFAULT_PRIVATE_FILES_PATH;
             $this->kernelRoot = $kernelRoot;
+            $this->fileSystem = $filesystem;
         }
         
         /**
@@ -63,13 +54,8 @@
          */
         public function setConfig(array $config): void
         {
-            if (!isset($config['public_dir'])) {
-                throw new InvalidArgumentException('Public files dir "public_dir" is required for RestUploader bundle');
-            }
-            
             $this->config = $config;
         }
-        
         
         /**
          * @param \Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile
@@ -77,18 +63,18 @@
          *
          * @return File|null
          */
-        public function uploadFile(
+        public function upload(
           UploadedFile $uploadedFile,
           bool $private = false
         ): ?File
         {
-            $uploadPath = $this->publicDir;
-            $relPath = self::DEFAULT_PUBLIC_FILES_PATH;
+            $uploadPath = $this->kernelRoot.'/'.$this->config['public_dir'];
+            $relPath = $this->config['public_dir'];
             $scheme = File::SCHEME['Public'];
             
             if (true === $private) {
-                $uploadPath = $this->privateDir;
-                $relPath = self::DEFAULT_PRIVATE_FILES_PATH;
+                $uploadPath = $this->kernelRoot.'/'.$this->config['private_dir'];
+                $relPath = $this->config['private_dir'];
                 $scheme = File::SCHEME['Private'];
             }
             
@@ -99,12 +85,44 @@
                 throw new \Exception($e->getMessage());
             }
             
-            $file = new File($uploadedFile->getClientOriginalName(),
-              $target->getMimeType(), $target->getExtension(),
-              $relPath.'/'.md5($uploadedFile->getBasename()).'.'.$uploadedFile->getClientOriginalExtension(),
-              $scheme);
+            $file = new File($scheme, $uploadedFile->getClientOriginalName(),
+              $target->getExtension(), $target->getSize(),
+              $relPath.'/'.md5($uploadedFile->getBasename()).'.'.$uploadedFile->getClientOriginalExtension());
             
             return $file;
+        }
+        
+        /**
+         * @param \Groovili\RestUploaderBundle\Entity\File $file
+         *
+         * @return \Symfony\Component\HttpFoundation\Response
+         */
+        public function download(File $file): Response
+        {
+            $download = file_get_contents($this->getFileRealPath($file));
+            
+            $headers = [
+              'Content-Type'        => $file->getExt(),
+              'Content-Disposition' => 'inline; filename="'.$file->getName().'"',
+            ];
+            
+            return new Response($download, 200, $headers);
+        }
+        
+        /**
+         * @param \Groovili\RestUploaderBundle\Entity\File $file
+         *
+         * @return bool
+         */
+        public function remove(File $file): bool
+        {
+            try {
+                $this->fileSystem->remove($this->getFileRealPath($file));
+            } catch (\Exception $exception) {
+                return false;
+            }
+            
+            return true;
         }
         
         /**
@@ -118,6 +136,6 @@
                 return $this->kernelRoot.'/'.$file->getPath();
             }
             
-            return $this->kernelRoot.'/../'.$file->getPath();
+            return $this->kernelRoot.'/'.$file->getPath();
         }
     }

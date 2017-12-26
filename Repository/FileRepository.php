@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Groovili\RestUploaderBundle\Repository;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Groovili\RestUploaderBundle\Entity\File;
 
 /**
