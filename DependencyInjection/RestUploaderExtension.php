@@ -24,7 +24,7 @@
      */
     class RestUploaderExtension extends Extension
     {
-        protected const DEFAULT_DIR_PERMISSIONS    = 755;
+        protected const DEFAULT_DIR_PERMISSIONS    = 0777;
         
         protected const DEFAULT_PUBLIC_FILES_PATH  = '../web/files';
         
