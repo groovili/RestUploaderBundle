@@ -7,7 +7,7 @@ Require the `groovili/rest-uploader-bundle` package in your composer.json and up
 
     $ composer require groovili/rest-uploader-bundle
 
-Add the RestUploaderBundle to your application's kernel:
+Add the **RestUploaderBundle** to your application's kernel:
 
 ```php
     public function registerBundles()
