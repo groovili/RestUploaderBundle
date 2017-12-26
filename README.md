@@ -12,11 +12,11 @@ Add the RestUploaderBundle to your application's kernel:
 ```php
     public function registerBundles()
     {
-        $bundles = array(
+        $bundles = [
             // ...
             new Groovili\RestUploaderBundle\RestUploaderBundle(),
             // ...
-        );
+        ];
         // ...
     }
 ```
