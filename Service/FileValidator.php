@@ -171,10 +171,12 @@
           UploadedFile $file,
           array $validationArray
         ): bool {
-            if (!in_array(strtolower($file->getClientOriginalExtension()),
-              $validationArray)
-            ) {
-                return false;
+            if (count($validationArray) > 0) {
+                if (!in_array(strtolower($file->getClientOriginalExtension()),
+                  $validationArray)
+                ) {
+                    return false;
+                }
             }
             
             return true;
