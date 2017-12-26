@@ -11,7 +11,6 @@
     
     namespace Groovili\RestUploaderBundle\Service;
     
-    use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
     use Symfony\Component\HttpFoundation\File\UploadedFile;
     
     /**
@@ -24,7 +23,7 @@
         /**
          * @var array
          */
-        protected static $excelExtensions = [
+        protected static $defaultDocumentExtensions = [
           'xls',
           'xlt',
           'xlm',
@@ -37,12 +36,23 @@
           'xlam',
           'xll',
           'xlw',
+          'docx',
+          'docm',
+          'dotx',
+          'dotm',
+          'doc',
+          'wpd',
+          'xml',
+          'psw',
+          'rtf',
+          'csv',
+          'txt',
         ];
         
         /**
          * @var array
          */
-        protected static $imageExtensions = [
+        protected static $defaultImageExtensions = [
           'ani',
           'bmp',
           'cal',
@@ -52,6 +62,7 @@
           'jbg',
           'jpe',
           'jpe',
+          'jpeg',
           'jpg',
           'mac',
           'pbm',
@@ -66,6 +77,43 @@
           'tga',
           'tiff',
           'wma',
+        ];
+        
+        /**
+         * @var array
+         */
+        protected static $defaultArchiveExtensions = [
+          's7z',
+          '7z',
+          'zip',
+          'zipx',
+          'rar',
+          'tar.gz',
+          'tgz',
+          'tar',
+        ];
+        
+        /**
+         * @var array
+         */
+        protected static $defaultVideoExtensions = [
+          'mpv',
+          'mpeg',
+          'mpg',
+          'ogg',
+          'webm',
+          'wmv',
+          'vob',
+          'mp2',
+          'mp4',
+          'm4p',
+          'm4v',
+          'mov',
+          'mkv',
+          'flv',
+          'f4v',
+          'avi',
+          '3gp',
         ];
         
         /**
@@ -93,10 +141,6 @@
          */
         public function setConfig(array $config): void
         {
-            if (!isset($config['public_dir'])) {
-                throw new InvalidArgumentException('Public files dir "public_dir" is required for RestUploader bundle');
-            }
-            
             $this->config = $config;
         }
         
@@ -105,12 +149,12 @@
          *
          * @return bool
          */
-        public function checkFileSize(UploadedFile $file): bool
+        public function isSizeValid(UploadedFile $file): bool
         {
             // Upload size in MB
             $size = $file->getSize() / 1000000;
             
-            if (self::DEFAULT_FILE_MAX_SIZE >= $size) {
+            if ($this->config['file_max_size'] >= $size) {
                 return true;
             }
             
@@ -119,13 +163,16 @@
         
         /**
          * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
+         * @param array $validationArray
          *
          * @return bool
          */
-        public function checkIsExcel(UploadedFile $file): bool
-        {
-            if (!in_array($file->getClientOriginalExtension(),
-              self::$excelExtensions)
+        protected static function isByFormat(
+          UploadedFile $file,
+          array $validationArray
+        ): bool {
+            if (!in_array(strtolower($file->getClientOriginalExtension()),
+              $validationArray)
             ) {
                 return false;
             }
@@ -138,14 +185,48 @@
          *
          * @return bool
          */
-        public function checkIsImage(UploadedFile $file): bool
+        public function isExtensionAllowed(UploadedFile $file): bool
         {
-            if (!in_array($file->getClientOriginalExtension(),
-              self::$imageExtensions)
-            ) {
-                return false;
-            }
-            
-            return true;
+            return self::isByFormat($file, $this->config['allowed_extensions']);
+        }
+        
+        /**
+         * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
+         *
+         * @return bool
+         */
+        public function isDocument(UploadedFile $file): bool
+        {
+            return self::isByFormat($file, self::$defaultDocumentExtensions);
+        }
+        
+        /**
+         * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
+         *
+         * @return bool
+         */
+        public function isImage(UploadedFile $file): bool
+        {
+            return self::isByFormat($file, self::$defaultImageExtensions);
+        }
+        
+        /**
+         * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
+         *
+         * @return bool
+         */
+        public function isArchive(UploadedFile $file): bool
+        {
+            return self::isByFormat($file, self::$defaultArchiveExtensions);
+        }
+        
+        /**
+         * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
+         *
+         * @return bool
+         */
+        public function isVideo(UploadedFile $file): bool
+        {
+            return self::isByFormat($file, self::$defaultVideoExtensions);
         }
     }
