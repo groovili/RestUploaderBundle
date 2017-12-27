@@ -14,7 +14,6 @@ namespace Groovili\RestUploaderBundle\Event;
 use Groovili\RestUploaderBundle\Entity\File;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class FilePostUpload
@@ -31,11 +30,6 @@ class FilePostUpload extends Event
     protected $file;
     
     /**
-     * @var Request $request
-     */
-    protected $request;
-    
-    /**
      * @var \Groovili\RestUploaderBundle\Entity\File
      */
     protected $fileEntity;
@@ -44,23 +38,13 @@ class FilePostUpload extends Event
      * FilePostUpload constructor.
      *
      * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
-     * @param \Symfony\Component\HttpFoundation\Request $request
      * @param \Groovili\RestUploaderBundle\Entity\File $fileEntity
      */
-    public function __construct(UploadedFile $file, Request $request, File
+    public function __construct(UploadedFile $file, File
     $fileEntity)
     {
         $this->file = $file;
-        $this->request = $request;
         $this->fileEntity = $fileEntity;
-    }
-    
-    /**
-     * @return \Symfony\Component\HttpFoundation\Request
-     */
-    public function getRequest(): Request
-    {
-        return $this->request;
     }
     
     /**

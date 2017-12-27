@@ -15,13 +15,18 @@ use Groovili\RestUploaderBundle\Entity\File;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Class FilePreDelete
+ * Class FilePreGetPath
  *
  * @package Groovili\RestUploaderBundle\Event
  */
-class FilePreDelete extends Event
+class FilePreGetPath extends Event
 {
-    CONST FILE_PRE_DELETE = 'rest_uploader.file.preDelete';
+    CONST FILE_PRE_GET_PATH = 'rest_uploader.file.preGetPath';
+    
+    /**
+     * @var string
+     */
+    protected $root;
     
     /**
      * @var \Groovili\RestUploaderBundle\Entity\File
@@ -29,14 +34,21 @@ class FilePreDelete extends Event
     protected $fileEntity;
     
     /**
-     * FilePreDelete constructor.
+     * FilePreGetPath constructor.
      *
      * @param \Groovili\RestUploaderBundle\Entity\File $fileEntity
+     * @param string $root
      */
-    public function __construct(File
-    $fileEntity)
+    public function __construct(File $fileEntity, string
+    $root)
     {
         $this->fileEntity = $fileEntity;
+        $this->root = $root;
+    }
+    
+    public function getRoot(): string
+    {
+        return $this->root;
     }
     
     /**

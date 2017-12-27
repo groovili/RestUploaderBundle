@@ -1,7 +1,7 @@
 services:
     rest_uploader.manager:
         class: Groovili\RestUploaderBundle\Service\FileManager
-        arguments: ["%kernel.root_dir%", "@filesystem"]
+        arguments: ["%kernel.root_dir%", "@filesystem", "@event_dispatcher"]
 
     rest_uploader.validator:
         class: Groovili\RestUploaderBundle\Service\FileValidator

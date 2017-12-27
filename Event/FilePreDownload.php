@@ -13,8 +13,6 @@ namespace Groovili\RestUploaderBundle\Event;
 
 use Groovili\RestUploaderBundle\Entity\File;
 use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class FilePreDownload
@@ -26,11 +24,6 @@ class FilePreDownload extends Event
     CONST FILE_PRE_DOWNLOAD = 'rest_uploader.file.preDownload';
     
     /**
-     * @var Request $request
-     */
-    protected $request;
-    
-    /**
      * @var \Groovili\RestUploaderBundle\Entity\File
      */
     protected $fileEntity;
@@ -38,22 +31,12 @@ class FilePreDownload extends Event
     /**
      * FilePreDownload constructor.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
      * @param \Groovili\RestUploaderBundle\Entity\File $fileEntity
      */
-    public function __construct(Request $request, File
+    public function __construct(File
     $fileEntity)
     {
-        $this->request = $request;
         $this->fileEntity = $fileEntity;
-    }
-    
-    /**
-     * @return \Symfony\Component\HttpFoundation\Request
-     */
-    public function getRequest(): Request
-    {
-        return $this->request;
     }
     
     /**

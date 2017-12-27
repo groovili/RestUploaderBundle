@@ -17,6 +17,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class FormValidEvent
+ *
+ * @package Groovili\RestUploaderBundle\Event
  */
 class FormValidEvent extends BaseFormEvent
 {
