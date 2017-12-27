@@ -13,6 +13,7 @@
     
     use Groovili\RestUploaderBundle\Entity\File;
     use FOS\RestBundle\View\View;
+    use Groovili\RestUploaderBundle\Form\Type\RestFileType;
     use Nelmio\ApiDocBundle\Annotation\Model;
     use Symfony\Component\HttpFoundation\File\Exception\FileException;
     use Symfony\Component\HttpFoundation\Request;
@@ -59,6 +60,30 @@
             $upload = $request->files->get('file');
             $manager = $this->get('rest_uploader.manager');
             $validator = $this->get('rest_uploader.validator');
+            
+//            Form type debug
+            
+//            $form = $this->createFormBuilder(['file' => $upload])
+//                         ->add('file', RestFileType::class, [
+//                           'allow_delete'        => true,
+//                           'validate_extensions' => true,
+//                           'validate_size'       => true,
+//                           'private'             => false,
+//                         ])->getForm();
+//            $form->handleRequest($request);
+//            $form->submit(['file' => $upload]);
+//
+//            dump($form);
+//
+//            $data = $form->getData();
+//
+//            dump($form, $data);
+//
+//            $em = $this->getDoctrine()->getManager();
+//            $em->persist($data['file']);
+//            $em->flush();
+//
+//            return $this->returnSuccess($data);
             
             if (isset($upload)) {
                 try {
@@ -218,7 +243,7 @@
         {
             $manager = $this->get('rest_uploader.manager');
             
-            if(!$manager->remove($file)){
+            if (!$manager->remove($file)) {
                 return $this->returnUnknownError('Failed to remove file.');
             }
             

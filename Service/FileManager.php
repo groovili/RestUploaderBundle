@@ -17,7 +17,7 @@
     use Groovili\RestUploaderBundle\Event\FilePreDownload;
     use Groovili\RestUploaderBundle\Event\FilePreGetPath;
     use Groovili\RestUploaderBundle\Event\FilePreUpload;
-    use Symfony\Component\EventDispatcher\EventDispatcher;
+    use Symfony\Component\EventDispatcher\EventDispatcherInterface;
     use Symfony\Component\Filesystem\Filesystem;
     use Symfony\Component\HttpFoundation\File\UploadedFile;
     use Symfony\Component\HttpFoundation\Response;
@@ -45,7 +45,7 @@
         private $config;
     
         /**
-         * @var \Symfony\Component\EventDispatcher\EventDispatcher
+         * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
          */
         private $dispatcher;
         
@@ -55,7 +55,7 @@
          * @param string $kernelRoot
          */
         public function __construct(string $kernelRoot, Filesystem
-        $filesystem, EventDispatcher $eventDispatcher)
+        $filesystem, EventDispatcherInterface $eventDispatcher)
         {
             $this->kernelRoot = $kernelRoot;
             $this->fileSystem = $filesystem;
