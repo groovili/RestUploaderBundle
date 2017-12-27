@@ -7,7 +7,7 @@ Require the `groovili/rest-uploader-bundle` package in your composer.json and up
 
     $ composer require groovili/rest-uploader-bundle
 
-Add the RestUploaderBundle to your application's kernel:
+Add the **RestUploaderBundle** to your application's kernel:
 
 ```php
     public function registerBundles()
@@ -21,6 +21,8 @@ Add the RestUploaderBundle to your application's kernel:
     }
 ```
 
+**FOSRest**, **JMSSerializer** and **Nelmio Api-doc** bundle would be installed as well and should be configured in your **config.yml** file.
+
 ## Configuration
 
 The `public_dir` and `private_dir` are path strings from **app** folder.
@@ -30,7 +32,7 @@ If not exist, would be added automatically. This parameters should be only strin
 
 `file_max_size` is integer number in MB, which would be maximum limit.
 
-Configuration which provided below is default for this bundle.
+Configuration which provided below is default for this bundle:
 
 ```yaml
     rest_uploader:
