@@ -12,6 +12,7 @@
     namespace Groovili\RestUploaderBundle\Form\DataTransformer;
     
     use Doctrine\ORM\EntityManagerInterface;
+    use Groovili\RestUploaderBundle\Entity\File;
     use Groovili\RestUploaderBundle\Service\FileManager;
     use Groovili\RestUploaderBundle\Service\FileValidator;
     use Symfony\Component\Form\DataTransformerInterface;
@@ -48,7 +49,7 @@
         /**
          * @var array
          */
-        protected static $emptyTransform = ['file' => null];
+        protected static $emptyTransform = null;
         
         /**
          * RestFileTransformer constructor.
@@ -59,12 +60,10 @@
          */
         public function __construct(
           FileManager $fileManager,
-          FileValidator $fileValidator,
           array $options,
           EntityManagerInterface $entityManager
         ) {
             $this->fileManager = $fileManager;
-            $this->fileValidator = $fileValidator;
             $this->options = $options;
             $this->em = $entityManager;
         }
@@ -76,44 +75,9 @@
          */
         public function transform($file)
         {
-            if (!$file instanceof UploadedFile) {
+            if (!$file) {
                 return self::$emptyTransform;
             }
-            
-            $private = false;
-            
-            if (true === $this->options['validate_extensions']) {
-                if (!$this->fileValidator->isExtensionAllowed($file)) {
-                    return self::$emptyTransform;
-                }
-            }
-            
-            if (true === $this->options['validate_size']) {
-                if (!$this->fileValidator->isSizeValid($file)) {
-                    return self::$emptyTransform;
-                }
-            }
-            
-            if (true === $this->options['private']) {
-                $private = true;
-            }
-            
-            return [
-              'file' => $this->fileManager->upload($file, $private),
-            ];
-        }
-        
-        /**
-         * @param mixed $data
-         *
-         * @return mixed
-         */
-        public function reverseTransform($file)
-        {
-            if (!$file) {
-                return null;
-            }
-            
             
             $fileEntity = $this->em->getRepository('RestUploaderBundle:File')
                                    ->findOneBy([
@@ -126,5 +90,25 @@
             }
             
             return $fileEntity;
+        }
+        
+        /**
+         * @param mixed $data
+         *
+         * @return mixed
+         */
+        public function reverseTransform($file)
+        {
+            if (!$file instanceof UploadedFile) {
+                return self::$emptyTransform;
+            }
+            
+            $private = false;
+            
+            if (true === $this->options['private']) {
+                $private = true;
+            }
+            
+            return $this->fileManager->upload($file, $private);
         }
     }

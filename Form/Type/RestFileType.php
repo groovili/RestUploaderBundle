@@ -18,6 +18,9 @@
     use Symfony\Component\Form\AbstractType;
     use Symfony\Component\Form\Extension\Core\Type\FileType;
     use Symfony\Component\Form\FormBuilderInterface;
+    use Symfony\Component\Form\FormError;
+    use Symfony\Component\Form\FormEvent;
+    use Symfony\Component\Form\FormEvents;
     use Symfony\Component\OptionsResolver\OptionsResolver;
     
     /**
@@ -69,6 +72,7 @@
               'validate_size'       => true,
               'allow_delete'        => true,
               'private'             => false,
+              'error_bubbling'      => false,
             ]);
             
             $resolver->setAllowedTypes('validate_extensions', 'bool');
@@ -90,12 +94,40 @@
           FormBuilderInterface $builder,
           array $options
         ): void {
+            $builder->addEventListener(FormEvents::PRE_SUBMIT,
+              function (FormEvent $event): void {
+                  $upload = $event->getData();
+                  $form = $event->getForm();
+                  $config = $form->getConfig();
+                  $options = $config->getOptions();
+                  $error = false;
+                  
+                  if (true === $options['validate_extensions']) {
+                      if (!$this->fileValidator->isExtensionAllowed($upload)) {
+                          $form->addError(new FormError('File extensions is not allowed.'));
+                          $error = true;
+                      }
+                  }
+                  
+                  if (true === $options['validate_size']) {
+                      if (!$this->fileValidator->isSizeValid($upload)) {
+                          $form->addError(new FormError('File size is too big.'));
+                          $error = true;
+                      }
+                  }
+                  
+                  if ($error) {
+                      $form->setData(null);
+                  }
+              });
+            
+            
             $dataTransformer = new RestFileTransformer
-            ($this->fileManager, $this->fileValidator, $options, $this->em);
+            ($this->fileManager, $options, $this->em);
             
             $builder->addModelTransformer($dataTransformer);
         }
-    
+        
         /**
          * @return mixed
          */

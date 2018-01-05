@@ -60,16 +60,16 @@
             $upload = $request->files->get('file');
             $manager = $this->get('rest_uploader.manager');
             $validator = $this->get('rest_uploader.validator');
-            
+
 //            Form type debug
-            
 //            $form = $this->createFormBuilder()
 //                         ->add('file', RestFileType::class, [
 //                           'allow_delete'        => true,
 //                           'validate_extensions' => true,
 //                           'validate_size'       => true,
 //                           'private'             => false,
-//                         ])->getForm();
+//                         ])
+//                         ->getForm();
 //
 //            $form->handleRequest($request);
 //            $clearMissing = $request->getMethod() != 'PATCH';
