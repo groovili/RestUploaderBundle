@@ -12,7 +12,6 @@
     namespace Groovili\RestUploaderBundle\Form\DataTransformer;
     
     use Doctrine\ORM\EntityManagerInterface;
-    use Groovili\RestUploaderBundle\Entity\File;
     use Groovili\RestUploaderBundle\Service\FileManager;
     use Groovili\RestUploaderBundle\Service\FileValidator;
     use Symfony\Component\Form\DataTransformerInterface;
@@ -49,9 +48,7 @@
         /**
          * @var array
          */
-        protected static $emptyTransform = [
-          'file' => null,
-        ];
+        protected static $emptyTransform = ['file' => null];
         
         /**
          * RestFileTransformer constructor.
@@ -75,10 +72,14 @@
         /**
          * @param mixed $file
          *
-         * @return array
+         * @return array|null
          */
-        public function transform($file): array
+        public function transform($file)
         {
+            if (!$file instanceof UploadedFile) {
+                return self::$emptyTransform;
+            }
+            
             $private = false;
             
             if (true === $this->options['validate_extensions']) {
@@ -97,21 +98,15 @@
                 $private = true;
             }
             
-            if ($file instanceof UploadedFile) {
-                return [
-                  'file' => $this->fileManager->upload($file, $private),
-                ];
-            }
-            
             return [
-              'file' => $file,
+              'file' => $this->fileManager->upload($file, $private),
             ];
         }
         
         /**
-         * @param \Groovili\RestUploaderBundle\Entity\File $data
+         * @param mixed $data
          *
-         * @return \Groovili\RestUploaderBundle\Entity\File|null|object
+         * @return mixed
          */
         public function reverseTransform($file)
         {
@@ -119,14 +114,17 @@
                 return null;
             }
             
-            $issue = $this->em->getRepository('RestUploaderBundle:File')
-                              ->findOneBy(['name' => $file->getName()]);
             
-            if (null === $issue) {
-                throw new TransformationFailedException(sprintf('An issue with number "%s" does not exist!',
-                  $file->getName()));
+            $fileEntity = $this->em->getRepository('RestUploaderBundle:File')
+                                   ->findOneBy([
+                                     'name' => $file->getClientOriginalName(),
+                                   ]);
+            
+            if (null === $fileEntity) {
+                throw new TransformationFailedException(sprintf('A file with name "%s" does not exist!',
+                  $file->getClientOriginalName()));
             }
             
-            return $issue;
+            return $fileEntity;
         }
     }

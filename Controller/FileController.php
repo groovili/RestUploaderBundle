@@ -63,25 +63,19 @@
             
 //            Form type debug
             
-//            $form = $this->createFormBuilder(['file' => $upload])
+//            $form = $this->createFormBuilder()
 //                         ->add('file', RestFileType::class, [
 //                           'allow_delete'        => true,
 //                           'validate_extensions' => true,
 //                           'validate_size'       => true,
 //                           'private'             => false,
 //                         ])->getForm();
-//            $form->handleRequest($request);
-//            $form->submit(['file' => $upload]);
 //
-//            dump($form);
+//            $form->handleRequest($request);
+//            $clearMissing = $request->getMethod() != 'PATCH';
+//            $form->submit(['file' => $upload], $clearMissing);
 //
 //            $data = $form->getData();
-//
-//            dump($form, $data);
-//
-//            $em = $this->getDoctrine()->getManager();
-//            $em->persist($data['file']);
-//            $em->flush();
 //
 //            return $this->returnSuccess($data);
             
