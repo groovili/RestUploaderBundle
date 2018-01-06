@@ -1,37 +1,53 @@
-# PHP CircleCI 2.0 configuration file
+machine:
+  php:
+    version: 7.1.6
+  timezone: Europe/Amsterdam
+  environment:
+    SYMFONY_ENV: test
+
+dependencies:
+  pre:
+    # application
+    - sudo composer self-update
+    # selenium
+    - wget http://selenium-release.storage.googleapis.com/3.4/selenium-server-standalone-3.4.0.jar
+    - wget https://chromedriver.storage.googleapis.com/2.27/chromedriver_linux64.zip
+    - unzip chromedriver_linux64.zip
+    - "java -jar selenium-server-standalone-3.4.0.jar > /dev/null 2>&1":
+              {background: true}
+
+  post:
+
+test:
+  pre:
+    # warmup and change permission of cache directory
+    - bin/console d:d:c --if-not-exists
+    - bin/console doctrine:schema:create  --no-interaction
+    - bin/console doctrine:schema:validate --no-interaction
+    - bin/console cache:clear --env=test --no-debug --no-warmup
+    - chmod -R a+w var/cache
+    # change permission of sessions directory
+    - sudo chown -R www-data var/sessions
+    - bin/console server:start
+
+  override:
+    # test command here
+
+  post:
+    - cp -r tests/_output $CIRCLE_ARTIFACTS
+
+#deployment:
+#  production:
+#    branch: master
+#    commands:
+#      - ./deploy.sh production master
 #
-# Check https://circleci.com/docs/2.0/language-php/ for more details
-#
-version: 2
-jobs:
-  build:
-    docker:
-      # specify the version you desire here
-      - image: circleci/php:7.1.5-browsers
-      
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mysql:9.4
+#  staging:
+#    branch: deployer
+#    commands:
+#      - ./deploy.sh staging deployer
 
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "composer.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run: composer install -n --prefer-dist
-
-      - save_cache:
-          paths:
-            - ./vendor
-          key: v1-dependencies-{{ checksum "composer.json" }}
-        
-      # run tests!
-      - run: phpunit
+#  staging:
+#    branch: master
+#    commands:
+#      - ./deploy_staging.sh
