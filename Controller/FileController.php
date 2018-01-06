@@ -58,61 +58,36 @@ class FileController extends BaseController
     public function uploadAction(Request $request): ?View
     {
         $upload = $request->files->get('file');
-        $manager = $this->get('rest_uploader.manager');
-        $validator = $this->get('rest_uploader.validator');
-
-//            Form type debug
-//
-//            $upload = json_decode($request->getContent(), true);
-//            $form = $this->createFormBuilder()
-//                         ->add('file', RestFileType::class, [
-//                           'allow_delete'        => true,
-//                           'validate_extensions' => true,
-//                           'validate_size'       => true,
-//                           'private'             => false,
-//                         ])
-//                         ->getForm();
-//
-//            $form->handleRequest($request);
-//            $clearMissing = $request->getMethod() != 'PATCH';
-//            $form->submit($upload, $clearMissing);
-//
-//            $data = $form->getData();
-//
-//            if(isset($data['file'])){
-//                $file = $data['file'];
-//                $em = $this->getDoctrine()->getManager();
-//                $em->persist($file);
-//                $em->flush();
-//
-//                return $this->returnSuccess($file);
-//            }
-//
-//            return $this->returnValidationError($data);
 
         if (isset($upload)) {
-            try {
-                if (!$validator->isSizeValid($upload)) {
-                    return $this->returnValidationError('File is too big or not valid.');
-                }
+            $form = $this->createFormBuilder()
+                ->add('file', RestFileType::class, [
+                    'allow_delete' => true,
+                    'validate_extensions' => true,
+                    'validate_size' => true,
+                    'private' => false,
+                ])
+                ->getForm();
 
-                if (!$validator->isExtensionAllowed($upload)) {
-                    return $this->returnValidationError('File extension is not allowed.');
-                }
+            $form->handleRequest($request);
+            $clearMissing = $request->getMethod() != 'PATCH';
+            $form->submit(['file' => $upload], $clearMissing);
 
-                $file = $manager->upload($upload);
+            $data = $form->getData();
 
+            if (isset($data['file'])) {
+                $file = $data['file'];
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($file);
                 $em->flush();
 
-                return $this->returnSuccess($file, Response::HTTP_CREATED);
-            } catch (FileException $e) {
-                return $this->returnUnknownError($e->getMessage());
+                return $this->returnSuccess($file);
             }
-        } else {
-            return $this->returnValidationError('File was not set.');
+
+            return $this->returnValidationError($data);
         }
+
+        return $this->returnValidationError('File was not set.');
     }
 
     /**
