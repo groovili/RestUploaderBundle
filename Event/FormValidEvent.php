@@ -17,10 +17,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class FormValidEvent
+ *
+ * @package Groovili\RestUploaderBundle\Event
  */
 class FormValidEvent extends BaseFormEvent
 {
-    CONST FORM_EVENT_VALID = 'app.form.valid';
+    CONST FORM_EVENT_VALID = 'rest_uploader.form.valid';
 
     /**
      * @var Response

@@ -1,8 +1,16 @@
 services:
+    rest_uploader.rest_file_type:
+        class: Groovili\RestUploaderBundle\Form\Type\RestFileType
+        arguments: ["@rest_uploader.manager", "@rest_uploader.validator", "@doctrine.orm.entity_manager"]
+        tags:
+          - { name: form.type }
+
     rest_uploader.manager:
         class: Groovili\RestUploaderBundle\Service\FileManager
-        arguments: ["%kernel.root_dir%", "@filesystem"]
+        arguments: ["%kernel.root_dir%", "@filesystem", "@event_dispatcher"]
 
     rest_uploader.validator:
         class: Groovili\RestUploaderBundle\Service\FileValidator
         arguments: ["%kernel.root_dir%"]
+
+

@@ -1,11 +1,20 @@
 # RestUploaderBundle
-A Symfony bundle for file uploade and management for REST services
+A **Symfony bundle** for file upload and management **for REST API**.
+
+Provides `File` entity, `rest_uploader.manager`,`rest_uploader.validator` services, `RestFileType` and list of **events to subscribe**:
+1. `rest_uploader.file.preUpload`
+2. `rest_uploader.file.postUpload`
+3. `rest_uploader.file.preDownload`
+4. `rest_uploader.file.preDelete`
+5. `rest_uploader.file.preGetPath`
+
+Examples can be found in examples section below.
 
 ## Installation
 
-Require the `groovili/rest-uploader-bundle` package in your composer.json and update your dependencies.
+Require the `groovili/rest-uploader-bundle` package in your **composer.json** and update your dependencies.
 
-    $ composer require groovili/rest-uploader-bundle
+    composer require groovili/rest-uploader-bundle
 
 Add the **RestUploaderBundle** to your application's kernel:
 
@@ -22,6 +31,7 @@ Add the **RestUploaderBundle** to your application's kernel:
 ```
 
 **FOSRest**, **JMSSerializer** and **Nelmio Api-doc** bundle would be installed as well and should be configured in your **config.yml** file.
+Please notice that `csrf_protection` should be `false` to use **RestFileType**.
 
 ## Configuration
 

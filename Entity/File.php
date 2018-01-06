@@ -92,7 +92,7 @@
         {
             return (string)$this->name;
         }
-        
+    
         /**
          * Get id
          *

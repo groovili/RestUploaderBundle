@@ -12,6 +12,12 @@
     namespace Groovili\RestUploaderBundle\Service;
     
     use Groovili\RestUploaderBundle\Entity\File;
+    use Groovili\RestUploaderBundle\Event\FilePostUpload;
+    use Groovili\RestUploaderBundle\Event\FilePreDelete;
+    use Groovili\RestUploaderBundle\Event\FilePreDownload;
+    use Groovili\RestUploaderBundle\Event\FilePreGetPath;
+    use Groovili\RestUploaderBundle\Event\FilePreUpload;
+    use Symfony\Component\EventDispatcher\EventDispatcherInterface;
     use Symfony\Component\Filesystem\Filesystem;
     use Symfony\Component\HttpFoundation\File\UploadedFile;
     use Symfony\Component\HttpFoundation\Response;
@@ -37,16 +43,23 @@
          * @var array
          */
         private $config;
+    
+        /**
+         * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+         */
+        private $dispatcher;
         
         /**
          * FileManager constructor.
          *
          * @param string $kernelRoot
          */
-        public function __construct(string $kernelRoot, Filesystem $filesystem)
+        public function __construct(string $kernelRoot, Filesystem
+        $filesystem, EventDispatcherInterface $eventDispatcher)
         {
             $this->kernelRoot = $kernelRoot;
             $this->fileSystem = $filesystem;
+            $this->dispatcher = $eventDispatcher;
         }
         
         /**
@@ -68,6 +81,11 @@
           bool $private = false
         ): ?File
         {
+            $event = new FilePreUpload($uploadedFile);
+            $dispatcher = $this->dispatcher;
+            $dispatcher->dispatch(FilePreUpload::FILE_PRE_UPLOAD,
+              $event);
+            
             $uploadPath = $this->kernelRoot.'/'.$this->config['public_dir'];
             $relPath = $this->config['public_dir'];
             $scheme = File::SCHEME['Public'];
@@ -88,6 +106,9 @@
             $file = new File($scheme, $uploadedFile->getClientOriginalName(),
               $target->getExtension(), $target->getSize(),
               $relPath.'/'.md5($uploadedFile->getBasename()).'.'.$uploadedFile->getClientOriginalExtension());
+    
+            $event = new FilePostUpload($uploadedFile, $file);
+            $dispatcher->dispatch(FilePostUpload::FILE_POST_UPLOAD, $event);
             
             return $file;
         }
@@ -100,6 +121,11 @@
         public function download(File $file): Response
         {
             $download = file_get_contents($this->getFileRealPath($file));
+    
+            $event = new FilePreDownload($file);
+            $dispatcher = $this->dispatcher;
+            $dispatcher->dispatch(FilePreDownload::FILE_PRE_DOWNLOAD,
+              $event);
             
             $headers = [
               'Content-Type'        => $file->getExt(),
@@ -116,6 +142,10 @@
          */
         public function remove(File $file): bool
         {
+            $event = new FilePreDelete($file);
+            $dispatcher = $this->dispatcher;
+            $dispatcher->dispatch(FilePreDelete::FILE_PRE_DELETE, $event);
+            
             try {
                 $this->fileSystem->remove($this->getFileRealPath($file));
             } catch (\Exception $exception) {
@@ -132,10 +162,16 @@
          */
         public function getFileRealPath(File $file): string
         {
+            $kernelRoot = $this->kernelRoot;
+            
+            $event = new FilePreGetPath($file, $kernelRoot);
+            $dispatcher = $this->dispatcher;
+            $dispatcher->dispatch(FilePreGetPath::FILE_PRE_GET_PATH, $event);
+            
             if (File::SCHEME['Private'] === $file->getScheme()) {
-                return $this->kernelRoot.'/'.$file->getPath();
+                return $kernelRoot.'/'.$file->getPath();
             }
             
-            return $this->kernelRoot.'/'.$file->getPath();
+            return $kernelRoot.'/'.$file->getPath();
         }
     }
