@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace Groovili\RestUploaderBundle\Controller;
 
+use FOS\RestBundle\Controller\FOSRestController;
 use Groovili\RestUploaderBundle\Entity\File;
 use FOS\RestBundle\View\View;
 use Groovili\RestUploaderBundle\Form\Type\RestFileType;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package Groovili\RestUploaderBundle\Controller
  */
-class FileController extends BaseController
+class FileController extends FOSRestController
 {
     /**
      * @SWG\Post(
@@ -81,13 +81,13 @@ class FileController extends BaseController
                 $em->persist($file);
                 $em->flush();
 
-                return $this->returnSuccess($file);
+                return $this->view($file, Response::HTTP_CREATED);
             }
 
-            return $this->returnValidationError($data);
+            return $this->view($form->getErrors(), Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->returnValidationError('File was not set.');
+        return $this->view('File was not set.', Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -123,7 +123,7 @@ class FileController extends BaseController
 
         $files = $repo->all($offset);
 
-        return $this->returnSuccess($files);
+        return $this->view($files, Response::HTTP_OK);
     }
 
     /**
@@ -156,7 +156,7 @@ class FileController extends BaseController
      */
     public function getAction(File $file): ?View
     {
-        return $this->returnSuccess($file);
+        return $this->view($file, Response::HTTP_OK);
     }
 
     /**
@@ -224,7 +224,7 @@ class FileController extends BaseController
         $manager = $this->get('rest_uploader.manager');
 
         if (!$manager->remove($file)) {
-            return $this->returnUnknownError('Failed to remove file.');
+            return $this->view('Failed to remove file.', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $doctrine = $this->getDoctrine();
@@ -233,6 +233,6 @@ class FileController extends BaseController
         $em->remove($file);
         $em->flush();
 
-        return $this->returnSuccess();
+        return $this->view([], Response::HTTP_OK);
     }
 }
