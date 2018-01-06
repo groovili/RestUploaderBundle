@@ -21,14 +21,6 @@ dependencies:
 test:
   pre:
     # warmup and change permission of cache directory
-    - bin/console d:d:c --if-not-exists
-    - bin/console doctrine:schema:create  --no-interaction
-    - bin/console doctrine:schema:validate --no-interaction
-    - bin/console cache:clear --env=test --no-debug --no-warmup
-    - chmod -R a+w var/cache
-    # change permission of sessions directory
-    - sudo chown -R www-data var/sessions
-    - bin/console server:start
 
   override:
     # test command here
