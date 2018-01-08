@@ -31,7 +31,7 @@
   },
   "autoload": {
     "psr-4": {
-      "": "src/"
+      "Groovili\\RestUploaderBundle\\": ""
     }
   },
   "autoload-dev": {
@@ -43,7 +43,6 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "0.1-dev"
     }
   }
 }
