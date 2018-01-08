@@ -12,5 +12,3 @@ services:
     rest_uploader.validator:
         class: Groovili\RestUploaderBundle\Service\FileValidator
         arguments: ["%kernel.root_dir%"]
-
-
