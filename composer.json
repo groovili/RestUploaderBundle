@@ -3,7 +3,13 @@
   "type": "symfony-bundle",
   "version": "1.0.0",
   "description": "A Symfony bundle to handle file upload and management for REST API",
-  "keywords": ["symfony", "rest", "file", "upload", "validation"],
+  "keywords": [
+    "symfony",
+    "rest",
+    "file",
+    "upload",
+    "validation"
+  ],
   "homepage": "https://github.com/groovili/RestUploaderBundle",
   "license": "MIT",
   "authors": [
