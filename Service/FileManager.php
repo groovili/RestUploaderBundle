@@ -88,12 +88,10 @@ class FileManager
             $event);
 
         $uploadPath = $this->kernelRoot . '/' . $this->config['public_dir'];
-        $relPath = $this->config['public_dir'];
         $scheme = File::SCHEME['Public'];
 
         if (true === $private) {
             $uploadPath = $this->kernelRoot . '/' . $this->config['private_dir'];
-            $relPath = $this->config['private_dir'];
             $scheme = File::SCHEME['Private'];
         }
 
@@ -106,7 +104,7 @@ class FileManager
 
         $file = new File($scheme, $uploadedFile->getClientOriginalName(),
             $target->getExtension(), $target->getSize(),
-            $relPath . '/' . md5($uploadedFile->getBasename()) . '.' . $uploadedFile->getClientOriginalExtension());
+            '/' . md5($uploadedFile->getBasename()) . '.' . $uploadedFile->getClientOriginalExtension());
 
         $event = new FilePostUpload($uploadedFile, $file);
         $dispatcher->dispatch(FilePostUpload::FILE_POST_UPLOAD, $event);
@@ -170,9 +168,9 @@ class FileManager
         $dispatcher->dispatch(FilePreGetPath::FILE_PRE_GET_PATH, $event);
 
         if (File::SCHEME['Private'] === $file->getScheme()) {
-            return $kernelRoot . '/' . $file->getPath();
+            return $kernelRoot . '/' . $this->config['private_dir'] . $file->getPath();
         }
 
-        return $kernelRoot . '/' . $file->getPath();
+        return $kernelRoot . '/' . $this->config['public_dir'] . $file->getPath();
     }
 }
