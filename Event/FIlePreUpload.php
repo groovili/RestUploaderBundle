@@ -22,12 +22,12 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class FilePreUpload extends Event
 {
     CONST FILE_PRE_UPLOAD = 'rest_uploader.file.preUpload';
-    
+
     /**
      * @var \Symfony\Component\HttpFoundation\File\UploadedFile
      */
     protected $file;
-    
+
     /**
      * FilePreUpload constructor.
      *
@@ -37,7 +37,7 @@ class FilePreUpload extends Event
     {
         $this->file = $file;
     }
-    
+
     /**
      * @return \Symfony\Component\HttpFoundation\File\UploadedFile
      */

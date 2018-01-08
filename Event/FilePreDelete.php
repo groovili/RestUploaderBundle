@@ -22,23 +22,23 @@ use Symfony\Component\EventDispatcher\Event;
 class FilePreDelete extends Event
 {
     CONST FILE_PRE_DELETE = 'rest_uploader.file.preDelete';
-    
+
     /**
      * @var \Groovili\RestUploaderBundle\Entity\File
      */
     protected $fileEntity;
-    
+
     /**
      * FilePreDelete constructor.
      *
      * @param \Groovili\RestUploaderBundle\Entity\File $fileEntity
      */
-    public function __construct(File
-    $fileEntity)
-    {
+    public function __construct(
+        File $fileEntity
+    ) {
         $this->fileEntity = $fileEntity;
     }
-    
+
     /**
      * @return \Groovili\RestUploaderBundle\Entity\File
      */

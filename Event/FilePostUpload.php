@@ -23,30 +23,31 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class FilePostUpload extends Event
 {
     CONST FILE_POST_UPLOAD = 'rest_uploader.file.postUpload';
-    
+
     /**
      * @var \Symfony\Component\HttpFoundation\File\UploadedFile
      */
     protected $file;
-    
+
     /**
      * @var \Groovili\RestUploaderBundle\Entity\File
      */
     protected $fileEntity;
-    
+
     /**
      * FilePostUpload constructor.
      *
      * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
      * @param \Groovili\RestUploaderBundle\Entity\File $fileEntity
      */
-    public function __construct(UploadedFile $file, File
-    $fileEntity)
-    {
+    public function __construct(
+        UploadedFile $file,
+        File $fileEntity
+    ) {
         $this->file = $file;
         $this->fileEntity = $fileEntity;
     }
-    
+
     /**
      * @return \Symfony\Component\HttpFoundation\File\UploadedFile
      */
@@ -54,7 +55,7 @@ class FilePostUpload extends Event
     {
         return $this->file;
     }
-    
+
     /**
      * @return \Groovili\RestUploaderBundle\Entity\File
      */
