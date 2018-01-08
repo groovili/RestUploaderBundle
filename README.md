@@ -30,7 +30,6 @@ Add the **RestUploaderBundle** to your application's kernel:
     }
 ```
 
-**FOSRest**, **JMSSerializer** and **Nelmio Api-doc** bundle would be installed as well and should be configured in your **config.yml** file.
 Please notice that `csrf_protection` should be `false` to use **RestFileType**.
 
 ## Configuration
@@ -50,4 +49,80 @@ Configuration which provided below is default for this bundle:
         private_dir: '../private'
         allowed_extensions: []
         file_max_size: 25
+```
+
+## Examples
+
+RestFileType for file upload 
+
+```php
+<?php
+    /** @var @UploadedFile $upload */
+    $upload = $request->files->get('file');
+    
+    if (isset($upload)) {
+        $form = $this->createFormBuilder()
+            ->add('file', RestFileType::class, [
+                'allow_delete' => true,
+                'validate_extensions' => true,
+                'validate_size' => true,
+                'private' => false,
+            ])
+            ->getForm();
+    
+        $form->handleRequest($request);
+        $clearMissing = $request->getMethod() != 'PATCH';
+        $form->submit(['file' => $upload], $clearMissing);
+    
+        $data = $form->getData();
+    
+        if (isset($data['file'])) {
+            /** @var File $file */
+            $file = $data['file'];
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($file);
+            $em->flush();
+        }
+     }
+```
+
+RestFileType submit of existing entity
+
+```php
+<?php
+    /**
+    * $file = ['file' => ['id' => 8]]
+    */
+    $file = json_decode($request->getContent(), true);
+    
+    $form = $this->createFormBuilder()
+        ->add('file', RestFileType::class, [
+            'allow_delete' => true,
+            'validate_extensions' => true,
+            'validate_size' => true,
+            'private' => false,
+        ])
+        ->getForm();
+
+    $form->handleRequest($request);
+    $clearMissing = $request->getMethod() != 'PATCH';
+    $form->submit($file , $clearMissing);
+```
+
+Upload and validate file via service
+
+```php
+<?php
+    /** @var @UploadedFile $upload */
+    $upload = $request->files->get('file');
+    
+    if (isset($upload)) {
+        $validator = $this->container->get('rest_uploader.validator');
+        $uploader = $this->container->get('rest_uploader.manager');
+        
+        if ($validator->isExtensionAllowed($upload) && $validator->isSizeValid($upload)){
+            /** @var File $file */
+            $file = $uploader->upload($upload, false);
+        }
+     }
 ```
