@@ -11,51 +11,28 @@ declare(strict_types=1);
 
 namespace Groovili\RestUploaderBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
 use Groovili\RestUploaderBundle\Entity\File;
-use FOS\RestBundle\View\View;
 use Groovili\RestUploaderBundle\Form\Type\RestFileType;
-use Nelmio\ApiDocBundle\Annotation\Model;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 /**
  * Class FileController
  *
  * @package Groovili\RestUploaderBundle\Controller
  */
-class FileController extends FOSRestController
+class FileController extends Controller
 {
     /**
-     * @SWG\Post(
-     * tags={"file"},
-     * @SWG\Parameter(
-     *     name="file",
-     *     in="formData",
-     *     type="file",
-     *     required=true,
-     *     description="File to be uploaded."
-     * ),
-     * @SWG\Response(
-     *     response=201,
-     *     description="Success, file uploaded.",
-     *     @SWG\Schema(
-     *      type="array",
-     *      @Model(type=File::class)
-     *     ),
-     * ),
-     * @SWG\Response(
-     *     response=400,
-     *     description="Something went wrong while uploading."
-     * ),
-     * @SWG\Response(
-     *     response=500,
-     *     description="Authentication needed!"
-     * ),
-     * )
+     * @param Request $request
+     * @return Response
      */
-    public function uploadAction(Request $request): ?View
+    public function uploadAction(Request $request): Response
     {
         $upload = $request->files->get('file');
 
@@ -81,40 +58,24 @@ class FileController extends FOSRestController
                 $em->persist($file);
                 $em->flush();
 
-                return $this->view($file, Response::HTTP_CREATED);
+                $encoder = new JsonEncoder();
+                $normalizer = new ObjectNormalizer();
+                $serializer = new Serializer([$normalizer], [$encoder]);
+
+                return new JsonResponse($serializer->serialize($file, 'json'), Response::HTTP_CREATED);
             }
 
-            return $this->view($form->getErrors(), Response::HTTP_BAD_REQUEST);
+            return new JsonResponse($form->getErrors(), Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->view('File was not set.', Response::HTTP_BAD_REQUEST);
+        return new JsonResponse('File was not set.', Response::HTTP_BAD_REQUEST);
     }
 
     /**
-     * @SWG\Get(
-     * tags={"file"},
-     * @SWG\Parameter(
-     *    name="page",
-     *    in="query",
-     *    type="integer",
-     *    required=false,
-     *    description="Page number."
-     * ),
-     * @SWG\Response(
-     *     response=200,
-     *     description="Success, list of files",
-     *     @SWG\Schema(
-     *      type="array",
-     *      @Model(type=File::class)
-     *     ),
-     * ),
-     * @SWG\Response(
-     *     response=500,
-     *     description="Authentication needed!"
-     * ),
-     * )
+     * @param Request $request
+     * @return null|Response
      */
-    public function cgetAction(Request $request): ?View
+    public function cgetAction(Request $request): ?Response
     {
         $repo = $this->getDoctrine()
             ->getRepository('RestUploaderBundle:File');
@@ -123,69 +84,29 @@ class FileController extends FOSRestController
 
         $files = $repo->all($offset);
 
-        return $this->view($files, Response::HTTP_OK);
-    }
+        $encoder = new JsonEncoder();
+        $normalizer = new ObjectNormalizer();
+        $serializer = new Serializer([$normalizer], [$encoder]);
 
-    /**
-     * @SWG\Get(
-     * tags={"file"},
-     * @SWG\Parameter(
-     *    name="file",
-     *    in="query",
-     *    type="integer",
-     *    required=true,
-     *    description="File id."
-     * ),
-     * @SWG\Response(
-     *     response=200,
-     *     description="Returns the file by id",
-     *     @SWG\Schema(
-     *         type="array",
-     *         @Model(type=File::class)
-     *     )
-     * ),
-     * @SWG\Response(
-     *     response=404,
-     *     description="Returns when file is not found"
-     * ),
-     * @SWG\Response(
-     *     response=500,
-     *     description="Authentication needed!"
-     * ),
-     * )
-     */
-    public function getAction(File $file): ?View
-    {
-        return $this->view($file, Response::HTTP_OK);
+        return new JsonResponse($serializer->serialize($files, 'json'), Response::HTTP_OK);
     }
 
     /**
      * @param File $file
-     *
-     * @return null|\Symfony\Component\HttpFoundation\Response
-     *
-     * @SWG\Get(
-     * tags={"file", "download"},
-     * @SWG\Parameter(
-     *    name="file",
-     *    in="query",
-     *    type="integer",
-     *    required=true,
-     *    description="File id."
-     * ),
-     * @SWG\Response(
-     *     response=200,
-     *     description="File download"
-     * ),
-     * @SWG\Response(
-     *     response=404,
-     *     description="File object not found with given id"
-     * ),
-     * @SWG\Response(
-     *     response=500,
-     *     description="Authentication needed!"
-     * ),
-     * )
+     * @return null|Response
+     */
+    public function getAction(File $file): ?Response
+    {
+        $encoder = new JsonEncoder();
+        $normalizer = new ObjectNormalizer();
+        $serializer = new Serializer([$normalizer], [$encoder]);
+
+        return new JsonResponse($serializer->serialize($file, 'json'), Response::HTTP_OK);
+    }
+
+    /**
+     * @param File $file
+     * @return Response
      */
     public function downloadAction(File $file): Response
     {
@@ -195,36 +116,15 @@ class FileController extends FOSRestController
     }
 
     /**
-     * @SWG\Delete(
-     * tags={"file"},
-     * @SWG\Parameter(
-     *    name="file",
-     *    in="query",
-     *    type="integer",
-     *    required=true,
-     *    description="File id."
-     * ),
-     * @SWG\Response(
-     *     response=204,
-     *     description="File deleted"
-     *
-     * ),
-     * @SWG\Response(
-     *     response=404,
-     *     description="File object not found with given id"
-     * ),
-     * @SWG\Response(
-     *     response=500,
-     *     description="Authentication needed!"
-     * ),
-     * )
+     * @param File $file
+     * @return null|Response
      */
-    public function deleteAction(File $file): ?View
+    public function deleteAction(File $file): ?Response
     {
         $manager = $this->get('rest_uploader.manager');
 
         if (!$manager->remove($file)) {
-            return $this->view('Failed to remove file.', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse('Failed to remove file.', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $doctrine = $this->getDoctrine();
@@ -233,6 +133,6 @@ class FileController extends FOSRestController
         $em->remove($file);
         $em->flush();
 
-        return $this->view([], Response::HTTP_OK);
+        return new JsonResponse([], Response::HTTP_OK);
     }
 }

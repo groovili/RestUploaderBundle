@@ -30,7 +30,6 @@ Add the **RestUploaderBundle** to your application's kernel:
     }
 ```
 
-**FOSRest**, **JMSSerializer** and **Nelmio Api-doc** bundle would be installed as well and should be configured in your **config.yml** file.
 Please notice that `csrf_protection` should be `false` to use **RestFileType**.
 
 ## Configuration
