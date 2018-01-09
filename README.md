@@ -126,3 +126,11 @@ Upload and validate file via service
         }
      }
 ```
+
+Add bundle routing to your **routing.yml**
+
+```yaml
+file:
+    resource: '@RestUploaderBundle/Resources/config/routing.yml'
+    type: yaml
+```
