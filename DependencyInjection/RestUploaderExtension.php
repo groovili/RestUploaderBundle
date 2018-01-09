@@ -46,6 +46,15 @@ class RestUploaderExtension extends Extension
 
         $kernelRootDir = $container->getParameter('kernel.root_dir') . '/';
 
+        if (!isset($config['public_dir'])) {
+            $config = [
+                'public_dir' => self::DEFAULT_PUBLIC_FILES_PATH,
+                'private_dir' => self::DEFAULT_PRIVATE_FILES_PATH,
+                'file_max_size' => 25,
+                'allowed_extensions' => [],
+            ];
+        }
+
         // Validate public dir ir set it from default config
         if (isset($config['public_dir']) && is_string($config['public_dir'])) {
             if (!self::validateDir($kernelRootDir . $config['public_dir'])) {
