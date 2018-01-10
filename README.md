@@ -45,7 +45,7 @@ Configuration which provided below is default for this bundle:
 
 ```yaml
     rest_uploader:
-        public_dir: ../web/files
+        public_dir: '../web/files'
         private_dir: '../private'
         allowed_extensions: []
         file_max_size: 25
