@@ -109,6 +109,32 @@ RestFileType submit of existing entity
     $form->submit($file , $clearMissing);
 ```
 
+RestFileType delete of existing entity
+
+```php
+<?php
+    /**
+    * $file = ['file' => ['id' => 8, 'delete' => true]]
+    */
+    $file = json_decode($request->getContent(), true);
+    
+    $form = $this->createFormBuilder()
+        ->add('file', RestFileType::class, [
+            'allow_delete' => true,
+            'validate_extensions' => true,
+            'validate_size' => true,
+            'private' => false,
+        ])
+        ->getForm();
+
+    $form->handleRequest($request);
+    $clearMissing = $request->getMethod() != 'PATCH';
+    $form->submit($file , $clearMissing);
+    
+    $em = $this->getDoctrine()->getManager();
+    $em->flush();
+```
+
 Upload and validate file via service
 
 ```php
