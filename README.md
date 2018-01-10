@@ -45,7 +45,7 @@ Configuration which provided below is default for this bundle:
 
 ```yaml
     rest_uploader:
-        public_dir: ../web/files
+        public_dir: '../web/files'
         private_dir: '../private'
         allowed_extensions: []
         file_max_size: 25
@@ -107,6 +107,32 @@ RestFileType submit of existing entity
     $form->handleRequest($request);
     $clearMissing = $request->getMethod() != 'PATCH';
     $form->submit($file , $clearMissing);
+```
+
+RestFileType delete of existing entity
+
+```php
+<?php
+    /**
+    * $file = ['file' => ['id' => 8, 'delete' => true]]
+    */
+    $file = json_decode($request->getContent(), true);
+    
+    $form = $this->createFormBuilder()
+        ->add('file', RestFileType::class, [
+            'allow_delete' => true,
+            'validate_extensions' => true,
+            'validate_size' => true,
+            'private' => false,
+        ])
+        ->getForm();
+
+    $form->handleRequest($request);
+    $clearMissing = $request->getMethod() != 'PATCH';
+    $form->submit($file , $clearMissing);
+    
+    $em = $this->getDoctrine()->getManager();
+    $em->flush();
 ```
 
 Upload and validate file via service
