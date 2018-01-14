@@ -17,7 +17,7 @@ use function in_array;
 /**
  * Class File
  */
-final class File
+class File
 {
     /**
      * Available schemes of file storage
