@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package Groovili\RestUploaderBundle\Service
  */
-class FileManager
+class FileManager implements FileManagerInterface
 {
     /**
      * @var string
