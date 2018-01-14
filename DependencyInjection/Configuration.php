@@ -31,16 +31,12 @@ class Configuration implements ConfigurationInterface
 
         $rootNode->children()
             ->scalarNode('public_dir')
-            ->defaultValue('web/assets/files')
-            ->cannotBeEmpty()
             ->end()
             ->scalarNode('private_dir')
-            ->defaultValue('private')
             ->end()
             ->arrayNode('allowed_extensions')
             ->end()
             ->integerNode('file_max_size')
-            ->defaultValue(25)
             ->end();
 
         return $treeBuilder;

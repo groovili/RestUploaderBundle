@@ -7,7 +7,7 @@
  *  * file that was distributed with this source code.
  *
  */
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Groovili\RestUploaderBundle\Form\DataTransformer;
 
@@ -32,35 +32,37 @@ class RestFileTransformer implements DataTransformerInterface
      * @var \Groovili\RestUploaderBundle\Service\FileManager
      */
     protected $fileManager;
-
+    
     /**
      * @var array
      */
     protected $options;
-
+    
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
      */
     protected $em;
-
+    
     /**
      * RestFileTransformer constructor.
+     *
      * @param FileManager $fileManager
      * @param array $options
      * @param EntityManagerInterface $entityManager
      */
     public function __construct(
-        FileManager $fileManager,
-        array $options,
-        EntityManagerInterface $entityManager
+      FileManager $fileManager,
+      array $options,
+      EntityManagerInterface $entityManager
     ) {
         $this->fileManager = $fileManager;
         $this->options = $options;
         $this->em = $entityManager;
     }
-
+    
     /**
      * @param $data
+     *
      * @return File|null|object
      */
     private function search4FileEntity($data)
@@ -68,36 +70,43 @@ class RestFileTransformer implements DataTransformerInterface
         if (false === $data || null === $data || !is_array($data)) {
             return $data;
         }
-
+        
         if (isset($data['id']) && is_numeric($data['id'])) {
             $fileEntity = $this->em->getRepository('RestUploaderBundle:File')
-                ->findOneBy([
-                    'id' => $data['id'],
-                ]);
-
+                                   ->findOneBy([
+                                     'id' => $data['id'],
+                                   ]);
+            
             if (null === $fileEntity) {
                 throw new TransformationFailedException(sprintf('A file with id "%s" does not exist!',
-                    $data['id']));
+                  $data['id']));
             }
-
+            
+            if (true === $this->options['allow_delete'] && isset($data['delete']) && true === (bool)$data['delete']) {
+                $this->fileManager->remove($fileEntity);
+                $this->em->remove($fileEntity);
+            }
+            
             return $fileEntity;
         }
-
-
+        
+        
         return $data;
     }
-
+    
     /**
      * @param mixed $data
+     *
      * @return File|mixed|null|object
      */
     public function transform($data)
     {
         return $this->search4FileEntity($data);
     }
-
+    
     /**
      * @param mixed $data
+     *
      * @return File|mixed|null|object
      * @throws \Exception
      */
@@ -105,14 +114,14 @@ class RestFileTransformer implements DataTransformerInterface
     {
         if ($data instanceof UploadedFile) {
             $private = false;
-
+            
             if (true === $this->options['private']) {
                 $private = true;
             }
-
+            
             return $this->fileManager->upload($data, $private);
         }
-
+        
         return $this->search4FileEntity($data);
     }
 }
