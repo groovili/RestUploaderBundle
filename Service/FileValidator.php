@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  *
  * @package Groovili\RestUploaderBundle\Service
  */
-class FileValidator
+class FileValidator implements FileValidatorInterface
 {
     /**
      * @var array
@@ -167,7 +167,7 @@ class FileValidator
      *
      * @return bool
      */
-    protected static function isByFormat(
+    public static function isByFormat(
         UploadedFile $file,
         array $validationArray
     ): bool {
