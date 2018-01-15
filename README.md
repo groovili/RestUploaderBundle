@@ -1,4 +1,7 @@
 # RestUploaderBundle
+[![Latest Stable Version](https://poser.pugx.org/groovili/rest-uploader-bundle/v/stable)](https://packagist.org/packages/groovili/rest-uploader-bundle)
+[![Total Downloads](https://poser.pugx.org/groovili/rest-uploader-bundle/downloads)](https://packagist.org/packages/groovili/rest-uploader-bundle)
+[![License](https://poser.pugx.org/groovili/rest-uploader-bundle/license)](https://packagist.org/packages/groovili/rest-uploader-bundle)
 A **Symfony bundle** for file upload and management **for REST API**.
 
 Provides `File` entity, `rest_uploader.manager`,`rest_uploader.validator` services, `RestFileType` and list of **events to subscribe**:
