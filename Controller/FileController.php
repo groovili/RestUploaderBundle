@@ -62,7 +62,13 @@ class FileController extends Controller
                 $normalizer = new ObjectNormalizer();
                 $serializer = new Serializer([$normalizer], [$encoder]);
 
-                return new JsonResponse($serializer->serialize($file, 'json'), Response::HTTP_CREATED);
+                return new JsonResponse(
+                    json_decode(
+                        $serializer->serialize($file, 'json'),
+                        true
+                    ),
+                    Response::HTTP_CREATED
+                );
             }
 
             return new JsonResponse($form->getErrors(), Response::HTTP_BAD_REQUEST);
@@ -88,7 +94,13 @@ class FileController extends Controller
         $normalizer = new ObjectNormalizer();
         $serializer = new Serializer([$normalizer], [$encoder]);
 
-        return new JsonResponse($serializer->serialize($files, 'json'), Response::HTTP_OK);
+                return new JsonResponse(
+                    json_decode(
+                        $serializer->serialize($files, 'json'),
+                        true
+                    ),
+                    Response::HTTP_CREATED
+                );
     }
 
     /**
@@ -101,7 +113,13 @@ class FileController extends Controller
         $normalizer = new ObjectNormalizer();
         $serializer = new Serializer([$normalizer], [$encoder]);
 
-        return new JsonResponse($serializer->serialize($file, 'json'), Response::HTTP_OK);
+                return new JsonResponse(
+                    json_decode(
+                        $serializer->serialize($file, 'json'),
+                        true
+                    ),
+                    Response::HTTP_CREATED
+                );
     }
 
     /**
