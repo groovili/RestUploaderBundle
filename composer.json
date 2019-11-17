@@ -21,7 +21,7 @@
   ],
   "require": {
     "php": ">=7.1",
-    "symfony/framework-bundle": "^3.1",
+    "symfony/framework-bundle": "^4.1.12",
     "doctrine/doctrine-bundle": "^1.6",
     "doctrine/orm": "^2.5",
     "symfony/console": "^2.8|^3.0"
